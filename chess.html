@@ -1,0 +1,1056 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <style>
+        html, body {
+            height: 100%;
+            padding: 0.1rem;
+            margin: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            font-size: 625%;
+        }
+        body {
+            background: url(https://img2.baidu.com/it/u=3777304409,2008708463&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500) no-repeat center/cover;
+        }
+        .wrapper {
+           height: 100%;
+           width: 100%;
+           display: flex;
+           align-items: center;
+        }
+        .wrapper>div {
+            flex: 1;
+        }
+        #area {
+            width: 5rem;
+            background: #cbcb94;
+            padding: .4rem;
+            margin: 0 auto;
+            border-radius: .2rem;
+            position: relative;
+        }
+        #area > div:first-child{
+            padding-top: 112.5%;
+            position: relative;
+        }
+        #area > div:last-child{
+            position: absolute;
+            left: -1.6rem;
+            top: 0;
+            width: 1.6rem;
+            height: 100%;
+            display: inline-flex;
+            flex-direction: column;
+        }
+        .avatar {
+            flex: 1;
+            min-height: 0;
+            height: 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        .avatar > div{
+            flex: 1;
+            line-height: 0;
+        }
+        .avatar > div > span {
+            display: inline-block;           
+            width: .8rem;
+            height: .8rem;
+            background: #ddd center/cover;
+            border-radius: 50%;
+            box-shadow: inset 0 0 0 0.06rem rgba(0,0,0,.2);
+            vertical-align: top;
+        }
+        #toolBoard[turn='master'] > .avatar:nth-of-type(3) > div > span,
+        #toolBoard[turn='visitor'] > .avatar:nth-of-type(1) > div > span {
+            box-shadow: 0 0 0 0.12rem rgba(10, 187, 40, 0.5);
+        }
+        .counter{
+            height: .7rem;
+            padding: 0 .2rem;
+            box-sizing: border-box;
+        }
+        .counter > div {
+            height: 100%;
+            box-shadow: inset 0 0 .08rem 0.01rem rgba(0,0,0,.8);
+            background: rgba(0,0,0,.5);
+            line-height: .7rem;
+            font-size: 0.3rem;
+            text-align: center;
+            color: #fff;
+        }
+        .counter > div[warn] {
+            color: red;
+        }
+        #backArea {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            border: .02rem solid #000;
+            display: flex;
+            flex-direction: column;
+            padding: .05rem;
+            box-sizing: border-box;
+        }
+        #backArea > div{
+            flex: 1;
+            height: 0;
+            min-height: 0;
+            box-shadow: inset 0 0 0 0.005rem #000;
+            display: flex;
+        }
+        #backArea > div > span {
+            flex: 1;
+            width: 0;
+            min-width: 0;
+            position: relative;
+        }
+        #backArea > div:not(:nth-child(5)) > span {
+            box-shadow: inset 0 0 0 .005rem #000;
+        }
+        #backArea > div:nth-child(5) > span:nth-child(2),
+        #backArea > div:nth-child(5) > span:nth-child(3),
+        #backArea > div:nth-child(5) > span:nth-child(6),
+        #backArea > div:nth-child(5) > span:nth-child(7){
+            display: table;
+        }
+        #backArea > div:nth-child(5) > span:nth-child(2):after,
+        #backArea > div:nth-child(5) > span:nth-child(3):after,
+        #backArea > div:nth-child(5) > span:nth-child(6):after,
+        #backArea > div:nth-child(5) > span:nth-child(7):after{
+            content: '';  
+            display: table-cell;
+            font-size: .3rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+        #backArea > div:nth-child(5) > span:nth-child(2):after{
+            content: '楚';
+        }
+        #backArea > div:nth-child(5) > span:nth-child(3):after{
+            content: '河';
+        }
+        #backArea > div:nth-child(5) > span:nth-child(6):after{
+            content: '界';
+            transform: rotateZ(-180deg);
+        }
+        #backArea > div:nth-child(5) > span:nth-child(7):after{
+            content: '汉';
+            transform: rotateZ(-180deg);
+        }
+        #backArea > div:nth-child(2) > span:nth-child(1):after,
+        #backArea > div:nth-child(2) > span:nth-child(7):after,
+        #backArea > div:nth-child(3) > span:nth-child(even):after,
+        #backArea > div:nth-child(6) > span:nth-child(even):after,
+        #backArea > div:nth-child(7) > span:nth-child(1):after,
+        #backArea > div:nth-child(7) > span:nth-child(7):after{
+            content: '';
+            display: inline-block;
+            position: absolute;
+            height: 20%;
+            width: 20%;
+            right: 5%;
+            bottom: 5%;
+            border-right: .01rem solid #000;
+            border-bottom: .01rem solid #000;
+        }
+        #backArea > div:nth-child(2) > span:nth-child(2):after,
+        #backArea > div:nth-child(2) > span:nth-child(8):after,
+        #backArea > div:nth-child(3) > span:nth-child(odd):after,
+        #backArea > div:nth-child(6) > span:nth-child(odd):after,
+        #backArea > div:nth-child(7) > span:nth-child(2):after,
+        #backArea > div:nth-child(7) > span:nth-child(8):after{
+            content: '';
+            display: inline-block;
+            position: absolute;
+            height: 20%;
+            width: 20%;
+            left: 5%;
+            bottom: 5%;
+            border-left: .01rem solid #000;
+            border-bottom: .01rem solid #000;
+        }
+        #backArea > div:nth-child(3) > span:nth-child(1):before,
+        #backArea > div:nth-child(3) > span:nth-child(7):before,
+        #backArea > div:nth-child(4) > span:nth-child(even):before,
+        #backArea > div:nth-child(7) > span:nth-child(even):before,
+        #backArea > div:nth-child(8) > span:nth-child(1):before,
+        #backArea > div:nth-child(8) > span:nth-child(7):before{
+            content: '';
+            display: inline-block;
+            position: absolute;
+            height: 20%;
+            width: 20%;
+            right: 5%;
+            top: 5%;
+            border-right: .01rem solid #000;
+            border-top: .01rem solid #000;
+        }
+        #backArea > div:nth-child(3) > span:nth-child(2):before,
+        #backArea > div:nth-child(3) > span:nth-child(8):before,
+        #backArea > div:nth-child(4) > span:nth-child(odd):before,
+        #backArea > div:nth-child(7) > span:nth-child(odd):before,
+        #backArea > div:nth-child(8) > span:nth-child(2):before,
+        #backArea > div:nth-child(8) > span:nth-child(8):before{
+            content: '';
+            display: inline-block;
+            position: absolute;
+            height: 20%;
+            width: 20%;
+            left: 5%;
+            top: 5%;
+            border-left: .01rem solid #000;
+            border-top: .01rem solid #000;
+        }
+        #backArea > div:nth-child(1) > span:nth-child(4),
+        #backArea > div:nth-child(2) > span:nth-child(5),
+        #backArea > div:nth-child(8) > span:nth-child(4),
+        #backArea > div:nth-child(9) > span:nth-child(5),
+        #backArea > div:nth-child(1) > span:nth-child(5),
+        #backArea > div:nth-child(2) > span:nth-child(4),
+        #backArea > div:nth-child(8) > span:nth-child(5),
+        #backArea > div:nth-child(9) > span:nth-child(4){
+            overflow: hidden;
+            position: relative;
+        }
+        #backArea > div:nth-child(1) > span:nth-child(4):before,
+        #backArea > div:nth-child(2) > span:nth-child(5):before,
+        #backArea > div:nth-child(8) > span:nth-child(4):before,
+        #backArea > div:nth-child(9) > span:nth-child(5):before  {
+            content: '';
+            display: block;
+            height: .01rem;
+            width: 141.422%;
+            transform: rotate(45deg);
+            transform-origin: 0;
+            background: #000;
+        }
+        #backArea > div:nth-child(1) > span:nth-child(5):before,
+        #backArea > div:nth-child(2) > span:nth-child(4):before,
+        #backArea > div:nth-child(8) > span:nth-child(5):before,
+        #backArea > div:nth-child(9) > span:nth-child(4):before  {
+            content: '';
+            display: block;
+            height: .01rem;
+            width: 141.422%;
+            transform: rotate(-45deg);
+            transform-origin: 100% 0;
+            background: #000;
+            position: absolute;
+            right: 0;
+        }
+        #dotArea, #dotTipArea {
+            position: absolute;
+            height: calc(100% - .14rem);
+            width: calc(100% - .14rem);
+            top: .07rem;
+            left: .07rem;
+        }
+        #dotTipArea {
+            display: flex;
+            flex-direction: column;
+        }
+        #dotTipArea > div{
+            display: flex;
+            position: relative;
+        }
+        #dotTipArea > div:not(:last-child){
+            flex: 1;
+            min-height: 0;
+            height: 0;
+        }
+        .dotTip:not(:last-child) {
+            flex: 1;
+            min-width: 0;
+            width: 0;
+        }
+        .dotTip:last-child {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 12.5%;
+            height: 100%;
+        }
+        .dotTip{
+            position: relative;
+            visibility: hidden;
+        }
+        .dotTip[show]{
+            visibility: visible;
+        }
+        .dotTip[rival] > div{
+            z-index: 2;
+        }
+        .dotTip[rival] > div:before {
+            transform: scale(3);
+            background: rgba(69,255,142,.5);
+        }
+        .dotTip[rival][warn] > div:before {
+            background: rgba(255,76,76,.5);
+        }
+        .dotTip[warn] > div:before {
+            background: rgba(255,76,76,.7);
+        }
+        .dotTip > div {
+            position: absolute;
+            width: 30%;
+            transform: translate(-50%, -50%);
+        }
+        .dotTip > div:before{
+            content: '';
+            padding-top: 100%;
+            display: block;
+            background: rgba(69,255,142,.7);
+            border-radius: 50%;;
+        }
+        .piece {
+            position: absolute;            
+            width: 10%; 
+        }
+        .piece > div {
+           padding-top: 100%;
+           position: relative;
+           transform: translate(-50%, -50%);
+           cursor: pointer;
+           z-index: 1;                    
+           perspective: 1000px;
+        }
+        .piece > div > div {            
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            background: #cbcb94;
+            box-shadow: .02rem .02rem .04rem 0 rgba(0,0,0,.8), inset .01rem .02rem .04rem 0 #fff;
+            display: flex;
+            align-items: center;
+        }
+        .piece[active][eat] > div > div {
+            transform-origin: 50% 100%;
+            animation: eat 1s ease-in-out forwards;
+        }
+        .piece[active][eat_reverse] > div > div {
+            transform-origin: 50% 0%;
+            animation: eat_reverse 1s ease-in-out forwards;
+        }
+        .piece > div > div::after {
+            content: attr(text);
+            font-size: .2rem;
+            font-weight: bold;
+            color: rgba(0,0,0,.6);
+            text-shadow: -0.01rem -0.01rem #fff;
+            text-align: center;
+            flex: 1;
+        }
+        .piece[active][eat] > div > div::after {
+            animation: eatText 1s ease-in-out forwards;
+        }
+        .piece[active][eat_reverse] > div > div::after {
+            animation: eatText_reverse 1s ease-in-out forwards;
+        }
+        .piece > div > div::before{
+            content: '';
+            position: absolute;
+            height: 88%;
+            width: 88%;
+            top: 6%;
+            left: 6%;
+            border-radius: 50%;
+            box-sizing: border-box;
+            border: .01rem solid rgba(0,0,0,.8);            
+        }
+        .piece.master > div > div::after {
+            color: red;
+        }
+        .piece.master > div > div::before {
+            border-color: red;
+        }
+        .piece[active]{
+            z-index: 999;
+        }
+        .piece[active] > div > div {
+            box-shadow: .04rem .04rem .08rem 0 rgba(0,0,0,1), inset .01rem .02rem .04rem 0 #fff;
+        }
+        @keyframes eat
+        {
+            0% {
+                box-shadow: .04rem .04rem .08rem 0 rgba(0,0,0,1), inset .01rem .02rem .04rem 0 #fff;
+                transform: translateY(30px) rotateX(0);
+            }
+            70% {
+                box-shadow: 0.02rem -0.06rem .1rem 1px rgba(0,0,0,.8), inset .03rem .05rem .06rem 0 #fff;
+                transform: rotateX(-60deg);
+                transform: translateY(30px) rotateX(0);
+            }
+            100% {
+                box-shadow: .02rem .02rem .04rem 0 rgba(0,0,0,.8), inset .01rem .02rem .04rem 0 #fff;
+                transform: rotateX(0);
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        @keyframes eatText
+        {
+            0% {
+                text-shadow: -0.01rem -0.01rem #fff;
+            }
+            70% {
+                text-shadow: -0.004rem -0.03rem  #fff;
+            }
+            100% {
+                text-shadow: -0.01rem -0.01rem #fff;
+            }
+        }
+        @keyframes eat_reverse
+        {
+            0% {
+                box-shadow: .04rem .04rem .08rem 0 rgba(0,0,0,1), inset .01rem .02rem .04rem 0 #fff;
+                transform: translateY(-30px) rotateX(0);
+            }
+            70% {
+                box-shadow: .04rem 0.06rem 0.1rem 0 rgb(0 0 0 / 80%), inset -0.01rem -0.03rem 0.01rem 0 #fff;
+                transform: rotateX(-60deg);
+                transform: translateY(-30px) rotateX(60deg);
+            }
+            100% {
+                box-shadow: .02rem .02rem .04rem 0 rgba(0,0,0,.8), inset .01rem .02rem .04rem 0 #fff;
+                transform: rotateX(0);
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        @keyframes eatText_reverse
+        {
+            0% {
+                text-shadow: -0.01rem -0.01rem #fff;
+            }
+            70% {
+                text-shadow: 0.01rem 0.03rem #fff;
+            }
+            100% {
+                text-shadow: -0.01rem -0.01rem #fff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div>
+            <div id="area">
+                <div>
+                    <div id="backArea"></div>
+                    <div id="dotTipArea"></div>
+                    <div id="dotArea"></div>
+                </div>
+                <div id="toolBoard">
+                    <div class="avatar"><div><span style="background-image: url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F11500073221%2F1000&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654003792&t=0399b3cdc4e28545ca1fe94d717fe665);"></span></div></div>
+                    <div class="counter">
+                        <div></div>
+                    </div>
+                    <div class="avatar"><div><span style="background-image: url(https://img2.baidu.com/it/u=3591908009,2813352222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=501);"></span></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            let gameInfo = {myCamp: 'master', turn: 'master'}, timeFlag,
+                htmlStr = '', dotTipStr = '', eating, players = {
+                master: {
+                    marshal: {
+                        text: '帥',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y },
+                                           { x: pos.x - 1, y: pos.y },
+                                           { x: pos.x, y: pos.y + 1 },
+                                           { x: pos.x, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=5 && p.x>=3 && p.y<=9 && p.y>=7 && !exisiPiece(players.master, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.visitor, p);
+                            });
+                            let my = players.master.marshal.pieces[0], rival = players.visitor.marshal.pieces[0];
+                            if(my.x == rival.x && !rival.out){
+                                let marshalDuel = false;
+                                for(let i = rival.y + 1; i < my.y; i++){
+                                    marshalDuel = exisiPiece(players.visitor, {x: my.x, y: i}) || exisiPiece(players.master, {x: my.x, y: i});
+                                    if(marshalDuel) break;
+                                }
+                                if(!marshalDuel) {
+                                    nextPos.push({ x: rival.x, y: rival.y , rival: rival});
+                                }
+                            }
+                            return nextPos;
+                        },
+                        pieces: [{x: 4, y: 9}]
+                    },
+                    bodyguard: {
+                        text: '仕',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y + 1 },
+                                           { x: pos.x + 1, y: pos.y - 1 },
+                                           { x: pos.x - 1, y: pos.y + 1 },
+                                           { x: pos.x - 1, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=5 && p.x>=3 && p.y<=9 && p.y>=7 && !exisiPiece(players.master, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.visitor, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 3, y: 9 }, { x: 5, y: 9 }]
+                    },
+                    minister: {
+                        text: '相',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 2, y: pos.y + 2 },
+                                           { x: pos.x + 2, y: pos.y - 2 },
+                                           { x: pos.x - 2, y: pos.y + 2 },
+                                           { x: pos.x - 2, y: pos.y - 2 }];
+                            nextPos = nextPos.filter(p => p.x<=8 && p.x>=0 && p.y<=9 && p.y>=5 && !exisiAnyPiece({x: (pos.x + p.x)/2, y: (pos.y + p.y)/2}) && !exisiPiece(players.master, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.visitor, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 2, y: 9 }, { x: 6, y: 9 }]
+                    },
+                    horse: {
+                        text: '馬',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y + 2 },
+                                           { x: pos.x - 1, y: pos.y + 2 },
+                                           { x: pos.x + 1, y: pos.y - 2 },
+                                           { x: pos.x - 1, y: pos.y - 2 },
+                                           { x: pos.x - 2, y: pos.y + 1 },
+                                           { x: pos.x - 2, y: pos.y - 1 },
+                                           { x: pos.x + 2, y: pos.y + 1 },
+                                           { x: pos.x + 2, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=8 && p.x>=0 && p.y<=9 && p.y>=0 && !exisiPiece(players.master, p) && 
+                                      !(p.y == pos.y + 2 && exisiAnyPiece({x: pos.x, y: pos.y + 1})) &&
+                                      !(p.y == pos.y - 2 && exisiAnyPiece({x: pos.x, y: pos.y - 1})) &&
+                                      !(p.x == pos.x + 2 && exisiAnyPiece({x: pos.x + 1, y: pos.y})) &&
+                                      !(p.x == pos.x - 2 && exisiAnyPiece({x: pos.x - 1, y: pos.y})));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.visitor, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 1, y: 9 }, { x: 7, y: 9 }]
+                    },
+                    chariot: {
+                        text: '車',
+                        rule: (pos) => {
+                            let nextPos = [];
+                            for(let i = pos.x - 1; i >= 0; i--) {
+                                if(checkPos({x: i, y: pos.y})) break;
+                            }
+                            for(let i = pos.x + 1; i <= 8; i++) {
+                                if(checkPos({x: i, y: pos.y})) break;
+                            }
+                            for(let i = pos.y - 1; i >= 0; i--) {
+                                if(checkPos({x: pos.x, y: i})) break;
+                            }
+                            for(let i = pos.y + 1; i <= 9; i++) {
+                                if(checkPos({x: pos.x, y: i})) break;
+                            }
+
+                            function checkPos(p) {
+                                let toBreak;
+                                if(!exisiAnyPiece(p)) {
+                                    nextPos.push(p);
+                                } else if(exisiPiece(players.visitor, p)){
+                                    nextPos.push({x: p.x, y: p.y, rival: exisiPiece(players.visitor, p)});
+                                    toBreak = true;
+                                } else toBreak = true;
+                                return toBreak;
+                            }
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 0, y: 9 }, { x: 8, y: 9 }]
+                    },
+                    cannon: {
+                        text: '炮',
+                        rule: (pos) => {
+                            let nextPos = [];
+                            for(let i = pos.x - 1; i >= 0; i--) {
+                                if(checkPos({x: i, y: pos.y}, 'left')) break;
+                            }
+                            for(let i = pos.x + 1; i <= 8; i++) {
+                                if(checkPos({x: i, y: pos.y}, 'right')) break;
+                            }
+                            for(let i = pos.y - 1; i >= 0; i--) {
+                                if(checkPos({x: pos.x, y: i}, 'up')) break;
+                            }
+                            for(let i = pos.y + 1; i <= 9; i++) {
+                                if(checkPos({x: pos.x, y: i}, 'down')) break;
+                            }
+
+                            function checkPos(p, direction) {
+                                let toBreak;
+                                if(!exisiAnyPiece(p)) {
+                                    nextPos.push(p);
+                                } else {
+                                    let rp, rival;
+                                    switch (direction) {
+                                        case 'left': 
+                                            for (let i = p.x - 1; i >= 0; i--){
+                                                rival = exisiPiece(players.visitor, {x: i, y: p.y});
+                                                if (rival) {
+                                                    rp = {x: i, y: p.y, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'right': 
+                                            for (let i = p.x + 1; i <= 8; i++){
+                                                rival = exisiPiece(players.visitor, {x: i, y: p.y});
+                                                if (rival) {
+                                                    rp = {x: i, y: p.y, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'up': 
+                                            for (let i = p.y - 1; i >= 0; i--){
+                                                rival = exisiPiece(players.visitor, {x: p.x, y: i});
+                                                if (rival) {
+                                                    rp = {x: p.x, y: i, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'down': 
+                                            for (let i = p.y + 1; i <= 9; i++){
+                                                rival = exisiPiece(players.visitor, {x: p.x, y: i});
+                                                if (rival) {
+                                                    rp = {x: p.x, y: i, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                    }
+                                    if(rp) nextPos.push(rp);
+                                    toBreak = true;
+                                }
+                                return toBreak;
+                            }
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 1, y: 7 }, { x: 7, y: 7 }]
+                    },
+                    sodier: {
+                        text: '兵',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y },
+                                           { x: pos.x - 1, y: pos.y },
+                                           { x: pos.x, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => ((p.x<=8 && p.x>=0 && p.y<=4 && p.y>=0) || (p.x<=8 && p.x>=0 && p.y<=9 && p.y>4 && p.x == pos.x && p.y == pos.y - 1)) && !exisiPiece(players.master, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.visitor, p);
+                            });
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 0, y: 6 }, { x: 2, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }]
+                    }
+                },
+                visitor: {
+                    marshal: {
+                        text: '將',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y },
+                                           { x: pos.x - 1, y: pos.y },
+                                           { x: pos.x, y: pos.y + 1 },
+                                           { x: pos.x, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=5 && p.x>=3 && p.y<=2 && p.y>=0 && !exisiPiece(players.visitor, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.master, p);
+                            });
+                            let my = players.visitor.marshal.pieces[0], rival = players.master.marshal.pieces[0];
+                            if(my.x == rival.x && !rival.out){
+                                let marshalDuel = false;
+                                for(let i = my.y + 1; i < rival.y; i++){
+                                    marshalDuel = exisiPiece(players.visitor, {x: my.x, y: i}) || exisiPiece(players.master, {x: my.x, y: i});
+                                    if(marshalDuel) break;
+                                }
+                                if(!marshalDuel) {
+                                    nextPos.push({ x: rival.x, y: rival.y , rival: rival});
+                                }
+                            }
+                            return nextPos;
+                        },
+                        pieces: [{ x: 4, y: 0 }]
+                    },
+                    bodyguard: {
+                        text: '士',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y + 1 },
+                                           { x: pos.x + 1, y: pos.y - 1 },
+                                           { x: pos.x - 1, y: pos.y + 1 },
+                                           { x: pos.x - 1, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=5 && p.x>=3 && p.y<=2 && p.y>=0 && !exisiPiece(players.visitor, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.master, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 3, y: 0 }, { x: 5, y: 0 }]
+                    },
+                    minister: {
+                        text: '象',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 2, y: pos.y + 2 },
+                                           { x: pos.x + 2, y: pos.y - 2 },
+                                           { x: pos.x - 2, y: pos.y + 2 },
+                                           { x: pos.x - 2, y: pos.y - 2 }];
+                            nextPos = nextPos.filter(p => p.x<=8 && p.x>=0 && p.y<=4 && p.y>=0 && !exisiAnyPiece({x: (pos.x + p.x)/2, y: (pos.y + p.y)/2}) && !exisiPiece(players.visitor, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.master, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 2, y: 0 }, { x: 6, y: 0 }]
+                    },
+                    horse: {
+                        text: '馬',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y + 2 },
+                                           { x: pos.x - 1, y: pos.y + 2 },
+                                           { x: pos.x + 1, y: pos.y - 2 },
+                                           { x: pos.x - 1, y: pos.y - 2 },
+                                           { x: pos.x - 2, y: pos.y + 1 },
+                                           { x: pos.x - 2, y: pos.y - 1 },
+                                           { x: pos.x + 2, y: pos.y + 1 },
+                                           { x: pos.x + 2, y: pos.y - 1 }];
+                            nextPos = nextPos.filter(p => p.x<=8 && p.x>=0 && p.y<=9 && p.y>=0 && !exisiPiece(players.visitor, p) && 
+                                      !(p.y == pos.y + 2 && exisiAnyPiece({x: pos.x, y: pos.y + 1})) &&
+                                      !(p.y == pos.y - 2 && exisiAnyPiece({x: pos.x, y: pos.y - 1})) &&
+                                      !(p.x == pos.x + 2 && exisiAnyPiece({x: pos.x + 1, y: pos.y})) &&
+                                      !(p.x == pos.x - 2 && exisiAnyPiece({x: pos.x - 1, y: pos.y})));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.master, p);
+                            });
+                            return nextPos;
+                        },
+                        pieces: [{ x: 1, y: 0 }, { x: 7, y: 0 }]
+                    },
+                    chariot: {
+                        text: '車',
+                        rule: (pos) => {
+                            let nextPos = [];
+                            for(let i = pos.x - 1; i >= 0; i--) {
+                                if(checkPos({x: i, y: pos.y})) break;
+                            }
+                            for(let i = pos.x + 1; i <= 8; i++) {
+                                if(checkPos({x: i, y: pos.y})) break;
+                            }
+                            for(let i = pos.y - 1; i >= 0; i--) {
+                                if(checkPos({x: pos.x, y: i})) break;
+                            }
+                            for(let i = pos.y + 1; i <= 9; i++) {
+                                if(checkPos({x: pos.x, y: i})) break;
+                            }
+
+                            function checkPos(p) {
+                                let toBreak;
+                                if(!exisiAnyPiece(p)) {
+                                    nextPos.push(p);
+                                } else if(exisiPiece(players.master, p)){
+                                    nextPos.push({x: p.x, y: p.y, rival: exisiPiece(players.master, p)});
+                                    toBreak = true;
+                                } else toBreak = true;
+                                return toBreak;
+                            }
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 0, y: 0 }, { x: 8, y: 0 }]
+                    },
+                    cannon: {
+                        text: '炮',
+                        rule: (pos) => {
+                            let nextPos = [];
+                            for(let i = pos.x - 1; i >= 0; i--) {
+                                if(checkPos({x: i, y: pos.y}, 'left')) break;
+                            }
+                            for(let i = pos.x + 1; i <= 8; i++) {
+                                if(checkPos({x: i, y: pos.y}, 'right')) break;
+                            }
+                            for(let i = pos.y - 1; i >= 0; i--) {
+                                if(checkPos({x: pos.x, y: i}, 'up')) break;
+                            }
+                            for(let i = pos.y + 1; i <= 9; i++) {
+                                if(checkPos({x: pos.x, y: i}, 'down')) break;
+                            }
+
+                            function checkPos(p, direction) {
+                                let toBreak;
+                                if(!exisiAnyPiece(p)) {
+                                    nextPos.push(p);
+                                } else {
+                                    let rp, rival;
+                                    switch (direction) {
+                                        case 'left': 
+                                            for (let i = p.x - 1; i >= 0; i--){
+                                                rival = exisiPiece(players.master, {x: i, y: p.y});
+                                                if (rival) {
+                                                    rp = {x: i, y: p.y, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'right': 
+                                            for (let i = p.x + 1; i <= 8; i++){
+                                                rival = exisiPiece(players.master, {x: i, y: p.y});
+                                                if (rival) {
+                                                    rp = {x: i, y: p.y, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'up': 
+                                            for (let i = p.y - 1; i >= 0; i--){
+                                                rival = exisiPiece(players.master, {x: p.x, y: i});
+                                                if (rival) {
+                                                    rp = {x: p.x, y: i, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        case 'down': 
+                                            for (let i = p.y + 1; i <= 9; i++){
+                                                rival = exisiPiece(players.master, {x: p.x, y: i});
+                                                if (rival) {
+                                                    rp = {x: p.x, y: i, rival: rival};
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                    }
+                                    if(rp) nextPos.push(rp);
+                                    toBreak = true;
+                                }
+                                return toBreak;
+                            }
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 1, y: 2 }, { x: 7, y: 2 }]
+                    },
+                    sodier: {
+                        text: '卒',
+                        rule: (pos) => {
+                            let nextPos = [{ x: pos.x + 1, y: pos.y },
+                                           { x: pos.x - 1, y: pos.y },
+                                           { x: pos.x, y: pos.y + 1 }];
+                            nextPos = nextPos.filter(p => ((p.x<=8 && p.x>=0 && p.y<=9 && p.y>=5) || (p.x<=8 && p.x>=0 && p.y<5 && p.y>=0 && p.x == pos.x && p.y == pos.y + 1)) && !exisiPiece(players.visitor, p));
+                            nextPos.forEach(p => {
+                                p.rival = exisiPiece(players.master, p);
+                            });
+
+                            return nextPos;
+                        },
+                        pieces: [{ x: 0, y: 3 }, { x: 2, y: 3 }, { x: 4, y: 3 }, { x: 6, y: 3 }, { x: 8, y: 3 }]
+                    }}
+            };
+
+            for (let i = 0; i < 9; i++) {
+                htmlStr += '<div>';
+                for (let j = 0; j < 8; j++) {
+                    htmlStr += '<span></span>';
+                }
+                htmlStr += '</div>';
+            }
+            document.getElementById('backArea').innerHTML = htmlStr;
+
+            for (let i = 0; i < 10; i++) {
+                dotTipStr += '<div>';
+                for (let j = 0; j < 9; j++) {
+                    dotTipStr += '<div class="dotTip"><div></div></div>';
+                }
+                dotTipStr += '</div>';
+            }
+            document.getElementById('dotTipArea').innerHTML = dotTipStr;
+
+            for (let player in players) {
+                for (let role in players[player]) {
+                    players[player][role].pieces.forEach(p => {
+                        let newItem = document.createElement('div');
+                        newItem.className = `piece ${player}`;
+                        newItem.innerHTML = '<div><div text="'+players[player][role].text+'"></div></div>';
+                        newItem.style.left = (1 / 8 * 100 * p.x) + '%';
+                        newItem.style.top = (1 / 9 * 100 * p.y) + '%';
+                        p.element = newItem;
+                        document.getElementById('dotArea').appendChild(newItem);
+                        let dom = newItem.children[0];
+                        dom.onmousedown = (event) => {
+                            if(gameInfo.turn != player || eating) return; //在线版此处需修改
+                            gameInfo.currentDom = dom;
+                            gameInfo.selfStepRecord = {dom: dom, down: {x: p.x, y: p.y}};
+                            let steps = players[player][role].rule({x: p.x, y: p.y});
+                            steps?.forEach(pos => {
+                                let ele = document.getElementById('dotTipArea').children[pos.y].getElementsByClassName('dotTip')[pos.x];
+                                ele.setAttribute('show', '');
+                                if(pos.rival) ele.setAttribute('rival', '');
+                                if(gameInfo.myCamp != player) ele.setAttribute('warn', '');
+                            });
+                            newItem.setAttribute('active','');
+                            let opos = getMousePos(event);
+                            newItem.style.left = `${newItem.offsetLeft}px`;
+                            newItem.style.top = `${newItem.offsetTop}px`;
+                            document.onmousemove = (e) => {
+                                e.preventDefault();
+                                let cpos = getMousePos(e), distance = { x: cpos.x - opos.x, y: cpos.y - opos.y };
+                                newItem.style.left = `${Number(newItem.style.left.replace('px', '')) + distance.x}px`;
+                                newItem.style.top = `${Number(newItem.style.top.replace('px', '')) + distance.y}px`;
+                                opos = cpos;
+                            }
+                            document.onmouseup = () => {
+                                document.onmousemove = null;
+                                document.onmouseup = null;
+                                let steps = players[player][role].rule({x: p.x, y: p.y}),
+                                    step = steps.find(p => Math.sqrt(Math.pow(p.x - newItem.offsetLeft/newItem.parentNode.offsetWidth*8, 2) + Math.pow(p.y - newItem.offsetTop/newItem.parentNode.offsetHeight*9, 2))<newItem.offsetWidth/newItem.parentNode.offsetWidth*4);
+                                    if(typeof step != 'undefined'){
+                                        if(typeof step.rival != 'undefined'){
+                                            gameInfo.selfStepRecord.action = 'eating';
+                                            let eatDir = step.rival.y< p.y ? 'eat': 'eat_reverse';
+                                            step.rival.out = true;
+                                            newItem.setAttribute(eatDir, '');
+                                            eating = true;
+                                            setTimeout(() => {
+                                                newItem.removeAttribute(eatDir);
+                                                newItem.removeAttribute('active');
+                                                document.getElementById('dotArea').removeChild(step.rival.element);
+                                                eating = false;
+                                                if(step.rival === players[{master: 'visitor', visitor: 'master'}[player]].marshal.pieces[0]) {
+                                                    alert({master: '红方', visitor: '黑方'}[player]+'胜！'); 
+                                                    clearTimeout(timeFlag);
+                                                }                                                   
+                                            }, 1000);       
+                                        }else { 
+                                            gameInfo.selfStepRecord.action = 'empty';
+                                            newItem.removeAttribute('active'); 
+                                        }
+                                        p.x = step.x;
+                                        p.y = step.y;
+                                        newItem.style.left = (1 / 8 * 100 * p.x) + '%';
+                                        newItem.style.top = (1 / 9 * 100 * p.y) + '%';
+                                        gameInfo.turn = {master: 'visitor', visitor: 'master'}[gameInfo.turn];
+                                        gameInfo.selfStepRecord.up = {x: p.x, y: p.y};
+                                        counter();             
+                                    }else{
+                                        Object.assign(gameInfo.selfStepRecord, {up: {x: p.x, y: p.y}, action: 'none'});
+                                        newItem.removeAttribute('active');
+                                        newItem.style.left = (1 / 8 * 100 * p.x) + '%';
+                                        newItem.style.top = (1 / 9 * 100 * p.y) + '%';
+                                    }
+                                    gameInfo.currentDom = null;
+                                    Array.prototype.forEach.call(document.getElementById('dotTipArea').getElementsByClassName('dotTip'), ele => {
+                                        ele.removeAttribute('show');
+                                        ele.removeAttribute('rival');
+                                        ele.removeAttribute('warn');
+                                    });
+                            }                            
+                        }                                               
+                    });
+                }
+            }
+
+            setHTMLFontsize();
+
+            window.onresize = () => {
+                setHTMLFontsize();
+            };
+
+            counter();
+            document.getElementById('toolBoard').setAttribute('turn', gameInfo.turn);
+            observeTurn(() => {
+                document.getElementById('toolBoard').setAttribute('turn', gameInfo.turn);
+            });
+
+            function setHTMLFontsize(){
+                let rate = (500*1.125+40)/540,
+                    standard = document.documentElement.clientHeight > document.documentElement.clientWidth * rate  ? document.documentElement.clientWidth : document.documentElement.clientHeight / rate; 
+                document.documentElement.style.fontSize = standard*100/600 + 'px';
+            }
+
+            function exisiAnyPiece(pos) {
+                return exisiPiece(players.master, pos) || exisiPiece(players.visitor, pos);
+            }
+
+            function exisiPiece(player, pos) {
+                let exp;
+                Object.keys(player).forEach(r => {
+                    let exist = player[r].pieces.some(p => {
+                        let isExist = p.x == pos.x && p.y == pos.y && !p.out; 
+                        if(isExist) exp = p;
+                        return isExist;
+                    })
+                    if(exist) return;
+                });
+                return exp;
+            }
+
+            function getMousePos(e) {
+                let pageX = e.pageX || e.clientX + (document.documentElement ? document.documentElement.scrollLeft : document.body.scrollLeft),
+                    pageY = e.pageY || e.clientY + (document.documentElement ? document.documentElement.scrollTop : document.body.scrollTop);
+
+                return {x: pageX, y: pageY};
+            }
+
+            function counter() {
+                clearTimeout(timeFlag);
+                let dom = document.getElementsByClassName('counter')[0].children[0],
+                    num = 120, str = '';
+                timeFlag = setInterval(() => {
+                    num--; 
+                    let seconds = num%60;
+                    str = `0${parseInt(num/60)}:${seconds >= 10 ? seconds : '0'+seconds}`;
+                    dom.innerText = str;
+                    if(num < 10) { 
+                        dom.setAttribute('warn','');
+                    } else if(dom.hasAttribute('warn')){
+                        dom.removeAttribute('warn');
+                    }
+                    if(num == 0) {
+                        if(gameInfo?.currentDom) {
+                            evt = document.createEvent('HTMLEvents');
+                            evt.initEvent('mouseup', true, true);
+                            gameInfo.currentDom.dispatchEvent(evt);
+                            if(gameInfo.selfStepRecord.action == 'none') {
+                                gameInfo.turn = {master: 'visitor', visitor: 'master'}[gameInfo.turn];
+                                counter();
+                            }
+                        } else {
+                            gameInfo.turn = {master: 'visitor', visitor: 'master'}[gameInfo.turn];
+                            counter();
+                        }
+                    }
+                }, 1000);
+            }
+
+            function observeTurn(fn) {
+                let value = gameInfo.turn;
+                Object.defineProperty(gameInfo, 'turn', { 
+                    get: function(){
+                        return value;
+                    },
+                    set: function(newval){
+                        value = newval;
+                        fn && fn();
+                    }
+                })
+            }
+        })();
+    </script>
+</body>
+</html>
