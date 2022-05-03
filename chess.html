@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <style>
+        * {
+            touch-action: pan-y;
+        }
         html, body {
             height: 100%;
             padding: 0.1rem;
@@ -32,19 +35,55 @@
             margin: 0 auto;
             border-radius: .2rem;
             position: relative;
+            box-sizing: border-box;
         }
         #area > div:first-child{
             padding-top: 112.5%;
             position: relative;
+            z-index: 2;
         }
-        #area > div:last-child{
+        #toolBoard{
             position: absolute;
             left: -1.6rem;
             top: 0;
             width: 1.6rem;
             height: 100%;
-            display: inline-flex;
             flex-direction: column;
+            display: inline-flex;
+        }
+        #area[direction='heightMode']{
+            position: static;
+            display: block;
+        }
+        #area[direction='heightMode'] #toolBoard {
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        #area[direction='heightMode'] #toolBoard .space::before {
+            content: '';
+            display: block;
+            padding-top: 92%;
+        }
+        #area[direction='heightMode'] #toolBoard .counter {
+            position: absolute;
+            right: .01rem;
+            top: .01rem;
+            height: .4rem;
+            padding: 0;
+        }
+        #area[direction='heightMode'] #toolBoard .counter > div {
+            line-height: .4rem;
+            font-size: .2rem;
+            padding: 0 .2rem;
+            border-radius: .05rem;
+        }
+        #area[direction='heightMode'] #toolBoard .avatar > div > span{
+            width: .5rem;
+            height: .5rem;
         }
         .avatar {
             flex: 1;
@@ -67,7 +106,7 @@
             box-shadow: inset 0 0 0 0.06rem rgba(0,0,0,.2);
             vertical-align: top;
         }
-        #toolBoard[turn='master'] > .avatar:nth-of-type(3) > div > span,
+        #toolBoard[turn='master'] > .avatar:nth-of-type(4) > div > span,
         #toolBoard[turn='visitor'] > .avatar:nth-of-type(1) > div > span {
             box-shadow: 0 0 0 0.12rem rgba(10, 187, 40, 0.5);
         }
@@ -455,6 +494,7 @@
                     <div class="counter">
                         <div></div>
                     </div>
+                    <div class="space"></div>
                     <div class="avatar"><div><span style="background-image: url(https://img2.baidu.com/it/u=3591908009,2813352222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=501);"></span></div></div>
                 </div>
             </div>
@@ -892,74 +932,81 @@
                         p.element = newItem;
                         document.getElementById('dotArea').appendChild(newItem);
                         let dom = newItem.children[0];
-                        dom.onmousedown = (event) => {
-                            if(gameInfo.turn != player || eating) return; //在线版此处需修改
-                            gameInfo.currentDom = dom;
-                            gameInfo.selfStepRecord = {dom: dom, down: {x: p.x, y: p.y}};
-                            let steps = players[player][role].rule({x: p.x, y: p.y});
-                            steps?.forEach(pos => {
-                                let ele = document.getElementById('dotTipArea').children[pos.y].getElementsByClassName('dotTip')[pos.x];
-                                ele.setAttribute('show', '');
-                                if(pos.rival) ele.setAttribute('rival', '');
-                                if(gameInfo.myCamp != player) ele.setAttribute('warn', '');
-                            });
-                            newItem.setAttribute('active','');
-                            let opos = getMousePos(event);
-                            newItem.style.left = `${newItem.offsetLeft}px`;
-                            newItem.style.top = `${newItem.offsetTop}px`;
-                            document.onmousemove = (e) => {
-                                e.preventDefault();
-                                let cpos = getMousePos(e), distance = { x: cpos.x - opos.x, y: cpos.y - opos.y };
-                                newItem.style.left = `${Number(newItem.style.left.replace('px', '')) + distance.x}px`;
-                                newItem.style.top = `${Number(newItem.style.top.replace('px', '')) + distance.y}px`;
-                                opos = cpos;
-                            }
-                            document.onmouseup = () => {
-                                document.onmousemove = null;
-                                document.onmouseup = null;
-                                let steps = players[player][role].rule({x: p.x, y: p.y}),
-                                    step = steps.find(p => Math.sqrt(Math.pow(p.x - newItem.offsetLeft/newItem.parentNode.offsetWidth*8, 2) + Math.pow(p.y - newItem.offsetTop/newItem.parentNode.offsetHeight*9, 2))<newItem.offsetWidth/newItem.parentNode.offsetWidth*4);
-                                    if(typeof step != 'undefined'){
-                                        if(typeof step.rival != 'undefined'){
-                                            gameInfo.selfStepRecord.action = 'eating';
-                                            let eatDir = step.rival.y< p.y ? 'eat': 'eat_reverse';
-                                            step.rival.out = true;
-                                            newItem.setAttribute(eatDir, '');
-                                            eating = true;
-                                            setTimeout(() => {
-                                                newItem.removeAttribute(eatDir);
-                                                newItem.removeAttribute('active');
-                                                document.getElementById('dotArea').removeChild(step.rival.element);
-                                                eating = false;
-                                                if(step.rival === players[{master: 'visitor', visitor: 'master'}[player]].marshal.pieces[0]) {
-                                                    alert({master: '红方', visitor: '黑方'}[player]+'胜！'); 
-                                                    clearTimeout(timeFlag);
-                                                }                                                   
-                                            }, 1000);       
-                                        }else { 
-                                            gameInfo.selfStepRecord.action = 'empty';
-                                            newItem.removeAttribute('active'); 
-                                        }
-                                        p.x = step.x;
-                                        p.y = step.y;
-                                        newItem.style.left = (1 / 8 * 100 * p.x) + '%';
-                                        newItem.style.top = (1 / 9 * 100 * p.y) + '%';
-                                        gameInfo.turn = {master: 'visitor', visitor: 'master'}[gameInfo.turn];
-                                        gameInfo.selfStepRecord.up = {x: p.x, y: p.y};
-                                        counter();             
-                                    }else{
-                                        Object.assign(gameInfo.selfStepRecord, {up: {x: p.x, y: p.y}, action: 'none'});
-                                        newItem.removeAttribute('active');
-                                        newItem.style.left = (1 / 8 * 100 * p.x) + '%';
-                                        newItem.style.top = (1 / 9 * 100 * p.y) + '%';
-                                    }
-                                    gameInfo.currentDom = null;
-                                    Array.prototype.forEach.call(document.getElementById('dotTipArea').getElementsByClassName('dotTip'), ele => {
-                                        ele.removeAttribute('show');
-                                        ele.removeAttribute('rival');
-                                        ele.removeAttribute('warn');
+                        let deviceEvents = [{down: 'onmousedown', move: 'onmousemove', up: 'onmouseup', getPos: getMousePos},
+                                            {down: 'ontouchstart', move: 'ontouchmove', up: 'ontouchend', getPos: getTouchPos}];
+                        for(let i = 0; i < deviceEvents.length; i++) {
+                            dom[deviceEvents[i].down] = (event) => {
+                                event.preventDefault();
+                                console.log(deviceEvents[i].down)
+                                if(gameInfo.turn != player || eating) return; //在线版此处需修改
+                                gameInfo.currentDom = dom;
+                                gameInfo.selfStepRecord = {dom: dom, down: {x: p.x, y: p.y}};
+                                let steps = players[player][role].rule({x: p.x, y: p.y});
+                                if(steps)
+                                    steps.forEach(pos => {
+                                        let ele = document.getElementById('dotTipArea').children[pos.y].getElementsByClassName('dotTip')[pos.x];
+                                        ele.setAttribute('show', '');
+                                        if(pos.rival) ele.setAttribute('rival', '');
+                                        if(gameInfo.myCamp != player) ele.setAttribute('warn', '');
                                     });
-                            }                            
+                                newItem.setAttribute('active','');
+                                let opos = deviceEvents[i].getPos(event);
+                                newItem.style.left = `${newItem.offsetLeft}px`;
+                                newItem.style.top = `${newItem.offsetTop}px`;
+                                document[deviceEvents[i].move] = (e) => {
+                                    e.preventDefault();
+                                    let cpos = deviceEvents[i].getPos(e), distance = { x: cpos.x - opos.x, y: cpos.y - opos.y };
+                                    newItem.style.left = `${Number(newItem.style.left.replace('px', '')) + distance.x}px`;
+                                    newItem.style.top = `${Number(newItem.style.top.replace('px', '')) + distance.y}px`;
+                                    opos = cpos;
+                                }
+                                document[deviceEvents[i].up] = () => {
+                                    document[deviceEvents[i].move] = null;
+                                    document[deviceEvents[i].up] = null;
+                                    let steps = players[player][role].rule({x: p.x, y: p.y}),
+                                        step = steps.find(p => Math.sqrt(Math.pow(p.x - newItem.offsetLeft/newItem.parentNode.offsetWidth*8, 2) + Math.pow(p.y - newItem.offsetTop/newItem.parentNode.offsetHeight*9, 2))<newItem.offsetWidth/newItem.parentNode.offsetWidth*4);
+                                        if(typeof step != 'undefined'){
+                                            if(typeof step.rival != 'undefined'){
+                                                gameInfo.selfStepRecord.action = 'eating';
+                                                let eatDir = step.rival.y< p.y ? 'eat': 'eat_reverse';
+                                                step.rival.out = true;
+                                                newItem.setAttribute(eatDir, '');
+                                                eating = true;
+                                                setTimeout(() => {
+                                                    newItem.removeAttribute(eatDir);
+                                                    newItem.removeAttribute('active');
+                                                    document.getElementById('dotArea').removeChild(step.rival.element);
+                                                    eating = false;
+                                                    if(step.rival === players[{master: 'visitor', visitor: 'master'}[player]].marshal.pieces[0]) {
+                                                        alert({master: '红方', visitor: '黑方'}[player]+'胜！'); 
+                                                        clearTimeout(timeFlag);
+                                                    }                                                   
+                                                }, 1000);       
+                                            }else { 
+                                                gameInfo.selfStepRecord.action = 'empty';
+                                                newItem.removeAttribute('active'); 
+                                            }
+                                            p.x = step.x;
+                                            p.y = step.y;
+                                            newItem.style.left = (1 / 8 * 100 * p.x) + '%';
+                                            newItem.style.top = (1 / 9 * 100 * p.y) + '%';
+                                            gameInfo.turn = {master: 'visitor', visitor: 'master'}[gameInfo.turn];
+                                            gameInfo.selfStepRecord.up = {x: p.x, y: p.y};
+                                            counter();             
+                                        }else{
+                                            Object.assign(gameInfo.selfStepRecord, {up: {x: p.x, y: p.y}, action: 'none'});
+                                            newItem.removeAttribute('active');
+                                            newItem.style.left = (1 / 8 * 100 * p.x) + '%';
+                                            newItem.style.top = (1 / 9 * 100 * p.y) + '%';
+                                        }
+                                        gameInfo.currentDom = null;
+                                        Array.prototype.forEach.call(document.getElementById('dotTipArea').getElementsByClassName('dotTip'), ele => {
+                                            ele.removeAttribute('show');
+                                            ele.removeAttribute('rival');
+                                            ele.removeAttribute('warn');
+                                        });
+                                }                            
+                            }
                         }                                               
                     });
                 }
@@ -979,8 +1026,10 @@
 
             function setHTMLFontsize(){
                 let rate = (500*1.125+40)/540,
-                    standard = document.documentElement.clientHeight > document.documentElement.clientWidth * rate  ? document.documentElement.clientWidth : document.documentElement.clientHeight / rate; 
+                    heightLarger = document.documentElement.clientHeight > document.documentElement.clientWidth * rate,
+                    standard = heightLarger ? document.documentElement.clientWidth : document.documentElement.clientHeight / rate; 
                 document.documentElement.style.fontSize = standard*100/600 + 'px';
+                document.getElementById('area').setAttribute('direction', heightLarger ? 'heightMode' : 'widthMode')
             }
 
             function exisiAnyPiece(pos) {
@@ -1007,6 +1056,13 @@
                 return {x: pageX, y: pageY};
             }
 
+            function getTouchPos(e) {
+                let pageX = e.touches[0].pageX || e.touches[0].clientX + (document.documentElement ? document.documentElement.scrollLeft : document.body.scrollLeft),
+                    pageY = e.touches[0].pageY || e.touches[0].clientY + (document.documentElement ? document.documentElement.scrollTop : document.body.scrollTop);
+
+                return {x: pageX, y: pageY};
+            }
+
             function counter() {
                 clearTimeout(timeFlag);
                 let dom = document.getElementsByClassName('counter')[0].children[0],
@@ -1022,7 +1078,7 @@
                         dom.removeAttribute('warn');
                     }
                     if(num == 0) {
-                        if(gameInfo?.currentDom) {
+                        if(gameInfo.currentDom) {
                             evt = document.createEvent('HTMLEvents');
                             evt.initEvent('mouseup', true, true);
                             gameInfo.currentDom.dispatchEvent(evt);
