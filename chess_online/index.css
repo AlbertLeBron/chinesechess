@@ -714,6 +714,10 @@ body {
 .msg_user .msgContent {
     padding-top: 15px;
 }
+.msg_user:not(.self) .msgavar{
+    display: flex;
+    align-items: center;
+}
 .msg_user:not(.self) .msgavar:before {
     content: '\263A';
     margin-right: 5px;
@@ -721,7 +725,10 @@ body {
 }
 .msg_user:not(.self) .msgavar>span {
     vertical-align: middle;
-    padding: 0 10px 0 0;
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    word-break: break-word;
 }
 .msg_user .msgContent>span {
     padding: 12px;
