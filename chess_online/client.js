@@ -107,7 +107,7 @@
 
             this.initChessBooard();
             //连接websocket后端服务器
-            this.socket = io.connect('ws://192.168.0.111:3333/');
+            this.socket = io.connect('ws://119.3.144:3333/');
  
             //告诉服务器端有用户登录
             this.socket.emit('login', {userid:this.userid, username:this.username, ch:0, cw:0});
