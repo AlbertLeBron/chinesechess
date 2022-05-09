@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">   
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>中国象棋</title>
+    <link rel="short icon" href="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pconline.com.cn%2Fimages%2Fnospd%2Fupload%2Fupc%2Ftx%2Fpcdlc%2F2101%2F18%2Fc38%2F250342652_1610974215912.png&refer=http%3A%2F%2Fimg.pconline.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654220036&t=6779a5f625311a346a1ec063fbfb70eb">
+    <link rel="stylesheet" tyle="text/css" href="./index.css">
+</head>
+<body>
+    <div id="home" class="active">
+        <div id="login">
+            <div class="img">
+                <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pconline.com.cn%2Fimages%2Fnospd%2Fupload%2Fupc%2Ftx%2Fpcdlc%2F2101%2F18%2Fc38%2F250342652_1610974215912.png&refer=http%3A%2F%2Fimg.pconline.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654220036&t=6779a5f625311a346a1ec063fbfb70eb">
+            </div>
+            <input id="username" type="text" placeholder="输入昵称" oninput="CHAT.usernameCheck(this);">
+            <a id="submitBtn" href="javascript:void(0)" onclick="CHAT.usernameSubmit();">立即加入</a>
+        </div>
+    </div>
+    <div id="tip">
+        <div>
+            <div><p><span id="tipPara"></span>此局结束，重新开始？</p></div>
+            <div><div><span class="btn" onclick="CHAT.showReGame();">是</span><span class="btn" onclick="CHAT.logout();">否</span></div></div>
+        </div>
+    </div>
+    <div class="wrapper">
+        <div>
+            <div id="area">
+                <div>
+                    <div id="readyArea">
+                        <div><span class="btn" onclick="CHAT.joinGame();">准备</span></div>
+                        <div>已就绪，等待对方加入~</div>
+                    </div>
+                    <div id="backArea"></div>
+                    <div id="dotTipArea"></div>
+                    <div id="dotArea"></div>
+                </div>
+                <div id="toolBoard">
+                    <div class="avatar">
+                        <div>
+                            <span></span>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="counter">
+                        <div></div>
+                    </div>
+                    <div class="space"></div>
+                    <div class="avatar">
+                        <div>
+                            <span></span>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="messageBox">
+        <div id="messageGuide" onclick="CHAT.showMessageBox();">
+            <div>&#9993;</div>
+            <div>&#10005;</div>
+        </div>
+        <div id="messageWrap">
+            <div id="onlinecount"></div>
+            <div id="message" class="message"></div>
+            <div id="broadcast">
+                <input type="text" placeholder="说点啥吧..." oninput="CHAT.messageCheck(this);" />
+                <span class="btn" onclick="CHAT.messageSubmit();">发送</span>
+            </div>
+        </div>
+    </div>
+    <script src="./node_modules/socket.io/client-dist/socket.io.js"></script>
+    <script>
+        
+    </script>
+    <script type="text/javascript" src="client.js"></script>
+</body>
+</html>
