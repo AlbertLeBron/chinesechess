@@ -7,7 +7,7 @@
 <img alt="游戏截图加载中..." src="./demo.JPG" />
 
 ## 运行
-运行在线版，进入项目“/chess_online”目录下(注意client.js文件里ws://后面的IP地址需要替换成个人可用IP，或暂时设置成localhost)：<br>
+运行在线版时，先进入项目“/chess_online”目录（注意“client.js”文件里”ws://“后面的IP地址需要替换成个人可用IP，或暂时设置成”localhost“）：<br>
 ##### 1. 初始化项目依赖<br>
     npm install
 ##### 2. 执行脚本命令<br>
