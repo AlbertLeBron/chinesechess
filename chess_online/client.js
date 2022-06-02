@@ -38,7 +38,7 @@
         //显示/关闭本局游戏结束提示
         showReGame:function(isShow, text){
             d.getElementById('tip').className = isShow ? 'active' : '';
-            d.getElementById('tipPara').innerText = text;
+            if(text != undefined) d.getElementById('tipPara').innerText = text;
         },
         //生成唯一用户id
         genUid:function(){
